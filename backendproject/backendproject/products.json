@@ -1,0 +1,49 @@
+{
+  "products": [
+    {
+      "id": 1,
+      "name": "Samsung Galaxy M14 5G",
+      "category": "mobile",
+      "price": 14990,
+      "rating": 4,
+      "image": "https://m.media-amazon.com/images/I/81ZSn2rk9WL.AC_UY327_FMwebp_QL65.jpg",
+      "description": "ICY Silver, 6GB, 128GB Storage"
+    },
+    {
+      "name": "pc",
+      "category": "electronics",
+      "price": "20000000",
+      "rating": 4,
+      "image": "https://static.cybertron.com/clx/home/pcs-laps-section/custom-gaming-pcs.jpg",
+      "description": "good",
+      "id": 2
+    },
+    {
+      "name": "pc",
+      "category": "electronics",
+      "price": "200000000",
+      "rating": 4,
+      "image": "https://static.cybertron.com/clx/home/pcs-laps-section/custom-gaming-pcs.jpg",
+      "description": "fiii",
+      "id": 3
+    },
+    {
+      "name": "sasd",
+      "category": "mobile",
+      "price": "32432",
+      "rating": 4,
+      "image": "xlcaslkc",
+      "description": "as;lm",
+      "id": 4
+    },
+    {
+      "name": "kasjnkjsn",
+      "category": "electronics",
+      "price": "102983102937",
+      "rating": 4,
+      "image": "aksnd",
+      "description": "aslkd",
+      "id": 5
+    }
+  ]
+}
