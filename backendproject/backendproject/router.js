@@ -1,10 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
+const Joi = require('joi');
 const { PrismaClient } = require('@prisma/client');
+const config = require('./config');
 
 const prisma = new PrismaClient();
-const JWT_SECRET = 'your-secret-key';
 
 // Get products by category
 router.get('/products/category/:category', async (req, res) => {
@@ -80,11 +82,11 @@ const verifyToken = (req, res, next) => {
     return res.status(401).json({ error: 'No token provided' });
   }
   try {
-    const decoded = jwt.verify(token, JWT_SECRET);
+    const decoded = jwt.verify(token, config.jwt.secret);
     req.user = decoded;
     next();
   } catch (error) {
-    res.status(401).json({ error: 'Invalid token' });
+    res.status(401).json({ error: 'Invalid or expired token' });
   }
 };
 
@@ -138,6 +140,64 @@ router.post('/products', verifyToken, async (req, res) => {
   }
 });
 
+// Update product (admin only)
+router.put('/products/:id', verifyToken, checkAdmin, async (req, res) => {
+  try {
+    console.log('Updating product:', req.params.id);
+    console.log('Update data:', req.body);
+
+    const { name, price, rating, image, description, category, stock } = req.body;
+
+    // Get the product to find its current category
+    const existingProduct = await prisma.product.findUnique({
+      where: { id: req.params.id },
+      include: { category: true }
+    });
+
+    if (!existingProduct) {
+      return res.status(404).json({ error: 'Product not found' });
+    }
+
+    // If category is being changed, find or create new category
+    let categoryId = existingProduct.categoryId;
+    if (category && category.toUpperCase() !== existingProduct.category.name) {
+      let newCategory = await prisma.category.findFirst({
+        where: { name: category.toUpperCase() }
+      });
+
+      if (!newCategory) {
+        newCategory = await prisma.category.create({
+          data: { name: category.toUpperCase() }
+        });
+      }
+      categoryId = newCategory.id;
+    }
+
+    const updatedProduct = await prisma.product.update({
+      where: { id: req.params.id },
+      data: {
+        name: name || existingProduct.name,
+        price: price ? Number(price) : existingProduct.price,
+        rating: rating ? Number(rating) : existingProduct.rating,
+        image: image || existingProduct.image,
+        description: description || existingProduct.description,
+        stock: stock ? Number(stock) : existingProduct.stock,
+        categoryId: categoryId
+      },
+      include: {
+        category: true,
+        specifications: true
+      }
+    });
+
+    console.log('Product updated successfully:', updatedProduct.name);
+    res.json({ message: 'Product updated successfully', product: updatedProduct });
+  } catch (error) {
+    console.error('Error updating product:', error.message);
+    res.status(500).json({ error: 'Error updating product: ' + error.message });
+  }
+});
+
 // Delete product
 router.delete('/products/:id', async (req, res) => {
   try {
@@ -154,17 +214,42 @@ router.delete('/products/:id', async (req, res) => {
 });
 
 
+// Validation schemas
+const signupSchema = Joi.object({
+  name: Joi.string().required().min(2).max(100),
+  email: Joi.string().email().required(),
+  password: Joi.string().required().min(8).max(128),
+});
+
+const loginSchema = Joi.object({
+  email: Joi.string().email().required(),
+  password: Joi.string().required(),
+});
+
 // User signup
 router.post('/signup', async (req, res) => {
   try {
+    // Validate input
+    const { error, value } = signupSchema.validate(req.body);
+    if (error) {
+      return res.status(400).json({ error: error.details[0].message });
+    }
+
+    // Hash password
+    const hashedPassword = await bcrypt.hash(value.password, 10);
+
     const user = await prisma.user.create({
       data: {
-        name: req.body.name,
-        email: req.body.email,
-        password: req.body.password
-      }
+        name: value.name,
+        email: value.email,
+        password: hashedPassword,
+      },
     });
-    res.status(201).json({ message: 'User created successfully' });
+    
+    res.status(201).json({ 
+      message: 'User created successfully',
+      userId: user.id 
+    });
   } catch (error) {
     console.error('Error creating user:', error);
     if (error.code === 'P2002') {
@@ -177,44 +262,42 @@ router.post('/signup', async (req, res) => {
 // User login
 router.post('/login', async (req, res) => {
   try {
-    const { email, password } = req.body;
-    
-    // Admin login check
-    if (email === 'admin@g.com' && password === '123') {
-      const token = jwt.sign(
-        { isAdmin: true },
-        JWT_SECRET,
-        { expiresIn: '1h' }
-      );
-      return res.json({ 
-        token, 
-        isAdmin: true,
-        message: 'Admin login successful' 
-      });
+    // Validate input
+    const { error, value } = loginSchema.validate(req.body);
+    if (error) {
+      return res.status(400).json({ error: error.details[0].message });
     }
-    
-    // Regular user login
+
+    const { email, password } = value;
+
+    // Find user by email
     const user = await prisma.user.findFirst({
-      where: {
-        email: email,
-        password: password
-      }
+      where: { email: email.toLowerCase() },
     });
-    
-    if (user) {
-      const token = jwt.sign(
-        { userId: user.id, isAdmin: user.isAdmin },
-        JWT_SECRET,
-        { expiresIn: '1h' }
-      );
-      res.json({ 
-        token, 
-        isAdmin: user.isAdmin,
-        message: 'Login successful' 
-      });
-    } else {
-      res.status(401).json({ error: 'Invalid credentials' });
+
+    if (!user) {
+      return res.status(401).json({ error: 'Invalid credentials' });
     }
+
+    // Verify password using bcrypt
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
+      return res.status(401).json({ error: 'Invalid credentials' });
+    }
+
+    // Generate JWT token
+    const token = jwt.sign(
+      { userId: user.id, isAdmin: user.isAdmin, email: user.email },
+      config.jwt.secret,
+      { expiresIn: config.jwt.expiresIn }
+    );
+
+    res.json({
+      token,
+      isAdmin: user.isAdmin,
+      userId: user.id,
+      message: 'Login successful',
+    });
   } catch (error) {
     console.error('Login error:', error);
     res.status(500).json({ error: 'Error during login' });

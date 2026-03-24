@@ -8,7 +8,25 @@ import "./Cart.css";
 const Cart = ({ setShowCart }) => {
   const navigate = useNavigate();
   const [isProcessing, setIsProcessing] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
   const cartItems = JSON.parse(localStorage.getItem('cart')) || [];
+
+  console.log('Cart component rendered - isAdmin:', isAdmin);
+
+  // Check if user is admin
+  React.useEffect(() => {
+    const checkAdmin = () => {
+      const token = localStorage.getItem('token');
+      const isAdminUser = localStorage.getItem('isAdmin');
+      const adminStatus = token && (isAdminUser === 'true' || isAdminUser === true);
+      console.log('Cart - isAdmin check - token:', token, 'isAdminUser:', isAdminUser, 'result:', adminStatus);
+      setIsAdmin(adminStatus);
+    };
+
+    checkAdmin();
+    window.addEventListener('storage', checkAdmin);
+    return () => window.removeEventListener('storage', checkAdmin);
+  }, []);
 
   const removeFromCart = (productId) => {
     const updatedCart = cartItems.filter(item => item.id !== productId);
@@ -44,7 +62,7 @@ const Cart = ({ setShowCart }) => {
 
       // Create order
       const orderResponse = await createOrder(cartTotal);
-      
+
       if (!orderResponse.success) {
         alert('Failed to create order. Please try again.');
         setIsProcessing(false);
@@ -67,7 +85,7 @@ const Cart = ({ setShowCart }) => {
         // On Success callback
         (paymentResponse) => {
           const verification = verifyPaymentSignature(paymentResponse);
-          
+
           if (verification.verified) {
             // Clear cart after successful payment
             localStorage.removeItem('cart');
@@ -75,7 +93,7 @@ const Cart = ({ setShowCart }) => {
             localStorage.removeItem('userName');
             localStorage.removeItem('userPhone');
             window.dispatchEvent(new Event('cartUpdated'));
-            
+
             // Navigate to success page
             navigate('/success', {
               state: {
@@ -154,8 +172,8 @@ const Cart = ({ setShowCart }) => {
                 <span className="text total">₹{cartTotal.toLocaleString('en-IN')}</span>
               </div>
               <div className="button">
-                <button 
-                  className="checkout-cta" 
+                <button
+                  className="checkout-cta"
                   onClick={handleCheckout}
                   disabled={isProcessing}
                 >

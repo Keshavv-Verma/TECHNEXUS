@@ -8,21 +8,21 @@ async function main() {
   // First, create users from MongoDB data
   const users = [
     {
-      name: "Gopesh Gautam",
-      email: "akshit0188.be23@chitkara.edu.in",
+      name: "Keshav Verma",
+      email: "keshav0462.be23@chitkara.edu.in",
       password: "12345678",
       isAdmin: false,
       createdAt: new Date("2025-05-13T12:24:54.225Z")
     },
     {
-      name: "gopesh",
+      name: "Keshav",
       email: "gopesh0252.be23@chitkara.edu.in",
       password: "12345678",
       isAdmin: false,
       createdAt: new Date("2025-05-13T12:58:58.495Z")
     },
     {
-      name: "Gopesh ",
+      name: "Keshav ",
       email: "abhiney0178.be23@chitkara.edu.in",
       password: "12345678",
       isAdmin: false,

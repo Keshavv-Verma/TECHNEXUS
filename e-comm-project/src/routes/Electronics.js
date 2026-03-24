@@ -4,8 +4,13 @@ import { useNavigate } from 'react-router-dom';
 export default function Electronics() {
   const navigate = useNavigate();
   const [products, setProducts] = useState([]);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
+    // Check if user is admin
+    const adminStatus = localStorage.getItem('isAdmin') === 'true';
+    setIsAdmin(adminStatus);
+
     fetch('http://localhost:5000/api/products/category/ELECTRONICS')
       .then(response => {
         console.log('Response status:', response.status);
@@ -51,12 +56,12 @@ export default function Electronics() {
 
 
   return (
-    <div style={{maxWidth: '1200px', margin: '0 auto', padding: '132px 16px'}}>
-      <h1 style={{fontSize: '28px', fontWeight: 'bold', marginBottom: '32px', textAlign: 'center'}}>Top Trending Deals</h1>
-      <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '24px'}}>
+    <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '132px 16px' }}>
+      <h1 style={{ fontSize: '28px', fontWeight: 'bold', marginBottom: '32px', textAlign: 'center' }}>Top Trending Deals</h1>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '24px' }}>
         {products.map((product) => (
-          <div 
-            key={product.id} 
+          <div
+            key={product.id}
             style={{
               position: 'relative',
               backgroundColor: '#1e1e1e',
@@ -77,34 +82,36 @@ export default function Electronics() {
             }}
           >
             <div style={{ position: 'absolute', right: '16px', top: '16px', zIndex: 10, display: 'flex', gap: '8px' }}>
+              {isAdmin && (
+                <button
+                  style={{
+                    backgroundColor: '#ff4444',
+                    color: 'white',
+                    borderRadius: '50%',
+                    padding: '8px',
+                    border: 'none',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease',
+                    width: '32px',
+                    height: '32px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                  onClick={(e) => handleDelete(e, product.id)}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.transform = 'scale(1.1)';
+                    e.currentTarget.style.backgroundColor = '#ff0000';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = 'scale(1)';
+                    e.currentTarget.style.backgroundColor = '#ff4444';
+                  }}
+                >
+                  ×
+                </button>
+              )}
               <button
-                style={{
-                  backgroundColor: '#ff4444',
-                  color: 'white',
-                  borderRadius: '50%',
-                  padding: '8px',
-                  border: 'none',
-                  cursor: 'pointer',
-                  transition: 'all 0.2s ease',
-                  width: '32px',
-                  height: '32px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}
-                onClick={(e) => handleDelete(e, product.id)}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.transform = 'scale(1.1)';
-                  e.currentTarget.style.backgroundColor = '#ff0000';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = 'scale(1)';
-                  e.currentTarget.style.backgroundColor = '#ff4444';
-                }}
-              >
-                ×
-              </button>
-              <button 
                 style={{
                   backgroundColor: 'rgba(255, 255, 255, 0.9)',
                   borderRadius: '50%',
@@ -150,7 +157,7 @@ export default function Electronics() {
                 }}
               />
             </div>
-            <div style={{padding: '16px', display: 'flex', flexDirection: 'column', gap: '8px'}}>
+            <div style={{ padding: '16px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
               <h2 style={{
                 fontSize: '14px',
                 fontWeight: 'bold',
@@ -162,7 +169,7 @@ export default function Electronics() {
                 WebkitBoxOrient: 'vertical',
                 minHeight: '42px'
               }}>{product.name}</h2>
-              <div style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <div>
                   {Array.from({ length: 5 }).map((_, i) => (
                     <span
@@ -177,7 +184,7 @@ export default function Electronics() {
                   ))}
                 </div>
               </div>
-              <p style={{fontWeight: 'bold', fontSize: '18px', color: '#10b981'}}>₹{product.price.toLocaleString('en-IN')}</p>
+              <p style={{ fontWeight: 'bold', fontSize: '18px', color: '#10b981' }}>₹{product.price.toLocaleString('en-IN')}</p>
             </div>
           </div>
         ))}

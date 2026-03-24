@@ -9,7 +9,7 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "mysql"
   url      = env("DATABASE_URL")
 }
 
@@ -49,10 +49,10 @@ model Category {
 model Product {
   id           String  @id @default(cuid())
   name         String
-  description  String?
+  description  String? @db.Text
   price        Float
   rating       Float   @default(4.0)
-  image        String
+  image        String  @db.Text
   subcategory  String?
   stock        Int     @default(0)
   isActive     Boolean @default(true)

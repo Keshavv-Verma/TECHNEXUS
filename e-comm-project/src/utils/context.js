@@ -56,6 +56,12 @@ const AppContext = ({ children }) => {
     setCartItems(items);
   };
   const handleRemoveFromCart = (product) => {
+    // Only allow admins to remove items
+    const isAdmin = localStorage.getItem('token') && localStorage.getItem('isAdmin') === 'true';
+    if (!isAdmin) {
+      alert('Only admins can remove items from cart');
+      return;
+    }
     let items = [...cartItems];
     items = items?.filter((p) => p.id !== product?.id);
     setCartItems(items);

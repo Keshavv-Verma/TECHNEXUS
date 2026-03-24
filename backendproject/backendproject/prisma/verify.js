@@ -57,7 +57,7 @@ async function verifyData() {
     console.log('🔐 TESTING AUTHENTICATION:');
     const testUser = await prisma.user.findFirst({
       where: {
-        email: 'dhamijamridul@gmail.com',
+        email: 'KeshavVerma@gmail.com',
         password: '123456'
       }
     });

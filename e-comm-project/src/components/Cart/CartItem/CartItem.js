@@ -1,10 +1,27 @@
-import React, { useContext } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import "./CartItem.css";
 import { IoIosClose } from "react-icons/io";
 import { Context } from "../../../utils/context";
 
 const CartItem = () => {
   const { cartItems, handleRemoveFromCart, handleCartProductQuantity } = useContext(Context);
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  console.log('CartItem rendered - isAdmin:', isAdmin);
+
+  useEffect(() => {
+    const checkAdmin = () => {
+      const token = localStorage.getItem('token');
+      const isAdminUser = localStorage.getItem('isAdmin');
+      const adminStatus = token && (isAdminUser === 'true' || isAdminUser === true);
+      console.log('CartItem - isAdmin check - token:', token, 'isAdminUser:', isAdminUser, 'result:', adminStatus);
+      setIsAdmin(adminStatus);
+    };
+    
+    checkAdmin();
+    window.addEventListener('storage', checkAdmin);
+    return () => window.removeEventListener('storage', checkAdmin);
+  }, []);
 
   return (
     <div className="cart-products">
@@ -17,7 +34,9 @@ const CartItem = () => {
           </div>
           <div className="prod-details">
             <span className="p-name">{item.attributes.title}</span>
-            <IoIosClose className="close" onClick={() => {handleRemoveFromCart(item)}}/>
+            {isAdmin && (
+              <IoIosClose className="close" onClick={() => {handleRemoveFromCart(item)}}/>
+            )}
             <div className="quantity-buttons">
               <span onClick={() => handleCartProductQuantity('dec', item)}>-</span>
               <span>{item.attributes.quantity}</span>

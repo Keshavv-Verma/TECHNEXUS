@@ -1,0 +1,17 @@
+{
+  "name": "technexus_sem5-latest",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "frontend": "npm start --prefix e-comm-project",
+    "backend": "npm start --prefix backendproject/backendproject",
+    "dev": "concurrently \"npm run backend\" \"npm run frontend\""
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
+}

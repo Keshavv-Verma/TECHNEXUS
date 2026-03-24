@@ -1,8 +1,15 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import "./LedSection.css";
 import smartTv from "../../assest/smartTv.png";
 
 const LedSection = () => {
+  const navigate = useNavigate();
+
+  const handleShopNow = () => {
+    navigate('/Electronics');
+  };
+
   return (
     <div className="led-section ">
       <div className="led-container">
@@ -20,7 +27,7 @@ const LedSection = () => {
             <h4>₹ 39,000</h4>
             <span className="perice-percent">-50%*</span>
           </div>
-          <button className="button-86">Shop Now</button>
+          <button className="button-86" onClick={handleShopNow}>Shop Now</button>
         </div>
         <div className="led-image">
           <img src={smartTv} alt="tv image" />

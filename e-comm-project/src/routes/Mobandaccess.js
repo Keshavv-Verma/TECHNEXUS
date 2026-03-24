@@ -4,9 +4,14 @@ import { useNavigate } from 'react-router-dom';
 export default function Mobandaccess() {
   const navigate = useNavigate();
   const [products, setProducts] = useState([]);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
-    fetch('http://localhost:5000/api/products/category/mobile')
+    // Check if user is admin
+    const adminStatus = localStorage.getItem('isAdmin') === 'true';
+    setIsAdmin(adminStatus);
+
+    fetch('http://localhost:5000/api/products/category/MOBANDACCESS')
       .then(response => {
         console.log('Response status:', response.status);
         return response.json();
@@ -77,33 +82,35 @@ export default function Mobandaccess() {
             }}
           >
             <div style={{ position: 'absolute', right: '16px', top: '16px', zIndex: 10, display: 'flex', gap: '8px' }}>
-              <button
-                style={{
-                  backgroundColor: '#ff4444',
-                  color: 'white',
-                  borderRadius: '50%',
-                  padding: '8px',
-                  border: 'none',
-                  cursor: 'pointer',
-                  transition: 'all 0.2s ease',
-                  width: '32px',
-                  height: '32px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}
-                onClick={(e) => handleDelete(e, product.id)}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.transform = 'scale(1.1)';
-                  e.currentTarget.style.backgroundColor = '#ff0000';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = 'scale(1)';
-                  e.currentTarget.style.backgroundColor = '#ff4444';
-                }}
-              >
-                ×
-              </button>
+              {isAdmin && (
+                <button
+                  style={{
+                    backgroundColor: '#ff4444',
+                    color: 'white',
+                    borderRadius: '50%',
+                    padding: '8px',
+                    border: 'none',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease',
+                    width: '32px',
+                    height: '32px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                  onClick={(e) => handleDelete(e, product.id)}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.transform = 'scale(1.1)';
+                    e.currentTarget.style.backgroundColor = '#ff0000';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = 'scale(1)';
+                    e.currentTarget.style.backgroundColor = '#ff4444';
+                  }}
+                >
+                  ×
+                </button>
+              )}
               <button
                 style={{
                   backgroundColor: 'rgba(255, 255, 255, 0.9)',
