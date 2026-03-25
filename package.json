@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "npm install --prefix e-comm-project && npm run build --prefix e-comm-project",
     "frontend": "npm start --prefix e-comm-project",
     "backend": "npm start --prefix backendproject/backendproject",
     "dev": "concurrently \"npm run backend\" \"npm run frontend\""
