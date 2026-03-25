@@ -20,7 +20,7 @@ const Dashboard = () => {
 
   const fetchProducts = useCallback(async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/products', {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/products`, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
@@ -58,7 +58,7 @@ const Dashboard = () => {
     }
 
     try {
-      const response = await fetch('http://localhost:5000/api/products', {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/products`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -131,7 +131,7 @@ const Dashboard = () => {
     }
 
     try {
-      const response = await fetch(`http://localhost:5000/api/products/${productId}`, {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/products/${productId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

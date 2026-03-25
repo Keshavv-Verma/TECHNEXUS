@@ -19,7 +19,7 @@ const Search = ({setShowSearch}) => {
   useEffect(() => {
     if (query.length > 0) {
       console.log('Searching for:', query);
-      fetch('http://localhost:5000/api/products')
+      fetch(`${process.env.REACT_APP_API_URL}/api/products`)
         .then(res => res.json())
         .then(data => {
           console.log('API response:', data);
