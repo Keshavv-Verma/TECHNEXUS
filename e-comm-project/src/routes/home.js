@@ -22,7 +22,7 @@ const Home = () => {
 
   useEffect(() => {
     setstate({ products, categories });
-  }, [products, categories]);
+  }, [products, categories, setstate]);
 
   const getProducts = () => {
     fetchDataFromApi("/api/products?populate=*").then((res) => {

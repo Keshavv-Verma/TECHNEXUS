@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Dashboard.css';
 
@@ -18,17 +18,7 @@ const Dashboard = () => {
   });
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      navigate('/login');
-      return;
-    }
-
-    fetchProducts();
-  }, []);
-
-  const fetchProducts = async () => {
+  const fetchProducts = useCallback(async () => {
     try {
       const response = await fetch('http://localhost:5000/api/products', {
         headers: {
@@ -45,7 +35,17 @@ const Dashboard = () => {
     } catch (error) {
       console.error('Error:', error);
     }
-  };
+  }, [navigate]);
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      navigate('/login');
+      return;
+    }
+
+    fetchProducts();
+  }, [fetchProducts, navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

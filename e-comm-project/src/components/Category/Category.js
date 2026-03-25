@@ -7,7 +7,7 @@ import { Context } from '../../utils/context';
 
 const Category = () => {
 
-    const {state, setstate} = useContext(Context);
+    const { setstate } = useContext(Context);
 
     const { id } = useParams();
     const { data } = useFetch(
@@ -17,9 +17,8 @@ const Category = () => {
         
     
  useEffect(() => {
-    setstate({...state,products: data});
-
- },[data])
+    setstate((prev) => ({ ...prev, products: data }));
+ }, [data, setstate])
 
     return (
         <div className='category-main-content'>

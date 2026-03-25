@@ -31,7 +31,6 @@ const nav_links = [
 const Navbar = () => {
   const navigate = useNavigate();
   const [clicked, setClicked] = useState(false);
-  const [username, setUsername] = useState('');
   const [showCart, setShowCart] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
   const [cartCount, setCartCount] = useState(0);
@@ -48,12 +47,6 @@ const Navbar = () => {
     const checkAuthStatus = () => {
       const token = localStorage.getItem('token');
       const isAdminUser = localStorage.getItem('isAdmin');
-      const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-      
-      if (currentUser) {
-        setUsername(currentUser.username);
-      }
-      
       setIsAdmin(token && isAdminUser === 'true');
     };
 
@@ -99,7 +92,6 @@ const Navbar = () => {
       localStorage.removeItem('currentUser');
       localStorage.removeItem('token');
       localStorage.removeItem('isAdmin');
-      setUsername('');
       setIsAdmin(false);
       window.location.reload(); // Force reload to update navbar
     } else {

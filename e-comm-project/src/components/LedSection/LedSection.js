@@ -30,7 +30,7 @@ const LedSection = () => {
           <button className="button-86" onClick={handleShopNow}>Shop Now</button>
         </div>
         <div className="led-image">
-          <img src={smartTv} alt="tv image" />
+          <img src={smartTv} alt="NTC 50 inch UHD Smart Android TV" />
         </div>
       </div>
     </div>
