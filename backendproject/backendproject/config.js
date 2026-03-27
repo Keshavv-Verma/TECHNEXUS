@@ -21,7 +21,22 @@ const config = {
 
   // CORS
   cors: {
-    origin: process.env.CORS_ORIGIN || 'http://localhost:3000',
+    origin: function (origin, callback) {
+      if (!origin) return callback(null, true); // Mobile apps, curl, etc.
+      
+      const allowedOrigins = [
+        process.env.CORS_ORIGIN,
+        'http://localhost:3000',
+        'http://localhost:3001'
+      ];
+
+      // Allow any .vercel.app domain dynamically
+      if (origin.endsWith('.vercel.app') || allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+      
+      return callback(new Error('CORS blocked origin: ' + origin), false);
+    },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
